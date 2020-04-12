@@ -1,0 +1,49 @@
+# depslib dependency file v1.0
+1586672200 source:d:\documents\05_cpp\win32\main.cpp
+	<windows.h>
+	<tchar.h>
+	<commctrl.h>
+	"resource.h"
+	"share.h"
+
+1586671988 d:\documents\05_cpp\win32\resource.h
+
+1586671988 source:d:\documents\05_cpp\win32\resource.rc
+	<windows.h>
+	"resource.h"
+
+1586671436 d:\documents\05_cpp\win32\share.h
+	<stdio.h>
+	<vector>
+	<map>
+	<string>
+	<sstream>
+	<assert.h>
+	<stdio.h>
+	<stdlib.h>
+	<tchar.h>
+
+1586672200 source:d:\documents\_project_\git\mywin32\main.cpp
+	<windows.h>
+	<tchar.h>
+	<commctrl.h>
+	"resource.h"
+	"share.h"
+
+1586671988 d:\documents\_project_\git\mywin32\resource.h
+
+1586671436 d:\documents\_project_\git\mywin32\share.h
+	<stdio.h>
+	<vector>
+	<map>
+	<string>
+	<sstream>
+	<assert.h>
+	<stdio.h>
+	<stdlib.h>
+	<tchar.h>
+
+1586671988 source:d:\documents\_project_\git\mywin32\resource.rc
+	<windows.h>
+	"resource.h"
+
