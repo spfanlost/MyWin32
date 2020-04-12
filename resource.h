@@ -12,5 +12,6 @@
 #define CM_RADO1                                40006
 #define CM_RADO2                                40007
 #define IDC_STATIC1                             40008
+#define IDC_EDIT_CTRL1                          40009
 #define IDC_PROGRESS_BAR1                       40010
 #define IDC_SCROLLBAR1                          40011

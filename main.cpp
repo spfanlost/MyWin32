@@ -44,6 +44,15 @@ BOOL CALLBACK DlgMain(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case CM_CHK1:
             hWin = GetDlgItem(hwndDlg, CM_CHK1);
             LOG_DBG("CM_CHK1:%d", SendMessage(hWin, BM_GETCHECK, 0, 0));
+            if(SendMessage(hWin, BM_GETCHECK, 0, 0))
+            {
+                SetWindowPos(hwndDlg,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
+            }
+            else
+            {
+                SetWindowPos(hwndDlg,HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
+            }
+            
             break;
         case CM_BUTN_L:
             hWin = GetDlgItem(hwndDlg, CM_CHK2);
