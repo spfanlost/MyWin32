@@ -43,17 +43,15 @@
 			<Add library="kernel32" />
 			<Add library="comctl32" />
 		</Linker>
+		<Unit filename="comm_def.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="main.h" />
 		<Unit filename="manifest.xml" />
 		<Unit filename="resource.h" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
-		<Unit filename="share.h" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
