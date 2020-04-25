@@ -27,17 +27,102 @@ HINSTANCE hInst;
 HICON hIcon;
 HWND hWin;
 static HWND hList=NULL;  // List View identifier
-LVCOLUMN LvCol; // Make Coluom struct for ListView
-LVITEM LvItem;  // ListView Item struct
-LV_DISPINFO lvd;
 
 char tmpstr[128];
 CHAR inBuf[80];
 
+
+void FindFile(const std::string strPath)
+{
+
+    WIN32_FIND_DATAA  findData = { 0 };
+    const std::string strFindPath = strPath + "\\*.*";
+    HANDLE hFindFine = FindFirstFileA(strFindPath.c_str(), &findData);
+    if (INVALID_HANDLE_VALUE == hFindFine)
+        LOG_DBG("Error:%ld", GetLastError());
+    do
+    {
+        if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+        {
+            if (findData.cFileName[0] == '.')
+                continue;
+            LOG_DBG("%s FIND DIRECTORY==%s\t", strPath.c_str(), findData.cFileName);
+            const std::string strNeedFindPaht = strPath + "\\" + findData.cFileName;
+            FindFile(strNeedFindPaht);
+        }
+        else
+        {
+            LOG_DBG("%s FIND FILE--%s\t", strPath.c_str(), findData.cFileName);
+        }
+    }
+    while (FindNextFileA(hFindFine, &findData));
+    FindClose(hFindFine);
+}
+
+void InsertListviewItem(HWND hList, int nPos, LPSTR wszFirst, LPSTR wszSecond,LPSTR wszThrid)
+{
+    LVITEM lvi;
+    lvi.mask = LVIF_TEXT | LVIF_IMAGE;
+    lvi.iImage = 0;
+    lvi.pszText = (LPSTR)"";
+    lvi.cchTextMax = 1024;
+
+    lvi.iItem = nPos;
+    lvi.iSubItem = 0;
+    ListView_InsertItem(hList, &lvi);
+    ListView_SetItemText(hList, nPos, 0, wszFirst);
+    lvi.iSubItem = 1;
+    ListView_SetItemText(hList, nPos, 1, wszSecond);
+    lvi.iSubItem = 2;
+    ListView_SetItemText(hList, nPos, 2, wszThrid);
+    return;
+}
+
+void CreateListView(HWND hwndDlg, HWND hList)
+{
+    char tmp1[64];
+    char tmp2[64];
+    char tmp3[64];
+    int i;
+
+    HMODULE hShell = LoadLibraryA("shell32.dll"); 
+    HICON hIcon = LoadIcon(hShell, MAKEINTRESOURCE(17)); 
+    HIMAGELIST hImageList = ImageList_Create(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), ILC_MASK, 1, 0);
+    ImageList_AddIcon(hImageList, hIcon);
+    ListView_SetImageList(hList, hImageList, LVSIL_SMALL); //lStyle = LV_VIEW_SAMLLICON or LV_VIEW_TILE ThiPara LVSIL_NORMAL
+    LVCOLUMN col;
+    col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+    col.cx = 45;
+    col.iSubItem = 0;
+    col.pszText = (LPSTR)"ID";
+
+    ListView_InsertColumn(hList, 0, &col);
+    col.cx = 82;
+    col.iSubItem = 0;
+    col.pszText = (LPSTR)"SecTest";
+    ListView_InsertColumn(hList, 1, &col);
+
+    col.cx = 82;
+    col.iSubItem = 0;
+    col.pszText = (LPSTR)"ThiTest";
+    ListView_InsertColumn(hList, 2, &col);
+    for(i=0; i<20; i++)
+    {
+        sprintf(tmp1,"%d",i+1);
+        sprintf(tmp2,"test%d",i);
+        sprintf(tmp3,"TEST%d",i);
+        InsertListviewItem(hList, i, (LPSTR)tmp1, (LPSTR)tmp2, (LPSTR)tmp3);
+    }
+    LONG lStyle = GetWindowLong(hList, GWL_STYLE);
+    lStyle &= ~LVS_TYPEMASK;
+    lStyle |= LV_VIEW_DETAILS; //LV_VIEW_DETAILS LV_VIEW_ICON LV_VIEW_SMALLICON LV_VIEW_LIST LV_VIEW_TILE
+    ListView_SetExtendedListViewStyle(hList, LVS_EX_FULLROWSELECT); 
+    SetWindowLong(hList, GWL_STYLE, lStyle);
+
+}
+
 BOOL CALLBACK DlgMain(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    int i;
-    char Temp[255];
     switch (uMsg)
     {
     case WM_INITDIALOG:
@@ -67,51 +152,7 @@ BOOL CALLBACK DlgMain(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         SendMessage(hWin, PBM_SETSTEP, (WPARAM)1, 0);
 
         hList=GetDlgItem(hwndDlg,IDC_LISTVIEW_CTRL1); // get the ID of the ListView
-        SendMessage(hList,LVM_SETTEXTBKCOLOR, 0,(LPARAM)CLR_NONE);
-
-        memset(&LvCol,0,sizeof(LvCol));                 // Reset Coluom
-        LvCol.mask=LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;   // Type of mask
-        LvCol.cx=0x42;                                  // width between each coloum
-        LvCol.pszText=(LPSTR)"Item";                    // First Header
-        SendMessage(hList,LVM_INSERTCOLUMN,0,(LPARAM)&LvCol);   // Insert/Show the coloum
-        LvCol.cx=0x56;
-        LvCol.pszText=(LPSTR)"SubItem1";                        // Next coloum
-        SendMessage(hList,LVM_INSERTCOLUMN,1,(LPARAM)&LvCol);   // ...
-        LvCol.pszText=(LPSTR)"SubItem2";                        //
-        SendMessage(hList,LVM_INSERTCOLUMN,2,(LPARAM)&LvCol);   //
-
-        memset(&LvItem,0,sizeof(LvItem)); // Reset Item Struct
-        LvItem.mask=LVIF_TEXT;   // Text Style
-        LvItem.cchTextMax = 256; // Max size of test
-        LvItem.iItem=0;          // choose item
-        LvItem.iSubItem=0;       // Put in first coluom
-        LvItem.pszText=(LPSTR)"Item0"; // Text to display (can be from a char variable) (Items)
-        SendMessage(hList,LVM_INSERTITEM,0,(LPARAM)&LvItem);    // Send to the Listview
-
-        for(i=1; i<=2; i++) // Add SubItems in a loop
-        {
-            LvItem.iSubItem=i;
-            sprintf(Temp,"SubItem%d",i);
-            LvItem.pszText=Temp;
-            SendMessage(hList,LVM_SETITEM,0,(LPARAM)&LvItem); // Enter text to SubItems
-        }
-
-        // lets add a new Item:
-        LvItem.iItem=1;            // choose item
-        LvItem.iSubItem=0;         // Put in first coluom
-        LvItem.pszText=(LPSTR)"Item1";   // Text to display (can be from a char variable) (Items)
-        SendMessage(hList,LVM_INSERTITEM,0,(LPARAM)&LvItem); // Send to the Listview
-
-        for(i=1; i<=2; i++) // Add SubItems in a loop
-        {
-            LvItem.iSubItem=i;
-            sprintf(Temp,(LPSTR)"SubItem%d",i);
-            LvItem.pszText=Temp;
-            SendMessage(hList,LVM_SETITEM,0,(LPARAM)&LvItem); // Enter etxt to SubItems
-        }
-        //ListView_SetItemState(hList,0,LVIS_SELECTED	,LVIF_STATE);
-        //ShowWindow(hWnd,SW_NORMAL);
-        //UpdateWindow(hWnd);
+        CreateListView(hwndDlg, hList);
 
         return TRUE;
     case WM_CLOSE:
@@ -123,8 +164,8 @@ BOOL CALLBACK DlgMain(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
         case IDC_CHK_StayOnTop:
             hWin = GetDlgItem(hwndDlg, IDC_CHK_StayOnTop);
-            LOG_DBG("StayOnTop:%ld", SendMessage(hWin, BM_GETCHECK, 0, 0));
-            sprintf(tmpstr, "StayOnTop:%ld", SendMessage(hWin, BM_GETCHECK, 0, 0));
+            LOG_DBG("StayOnTop:%lld", SendMessage(hWin, BM_GETCHECK, 0, 0));
+            sprintf(tmpstr, "StayOnTop:%lld", SendMessage(hWin, BM_GETCHECK, 0, 0));
             SetDlgItemText(hwndDlg, IDC_STATIC1, (LPCTSTR)tmpstr);
             SetDlgItemText(hwndDlg, IDC_EDIT_CTRL1, (LPCTSTR)tmpstr);
             if (SendMessage(hWin, BM_GETCHECK, 0, 0))
@@ -175,5 +216,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     hInst = hInstance;
     InitCommonControls();
     hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_ICON1));
+    FindFile("D:\\Documents\\_Project_\\git\\myWin32");
     return DialogBox(hInst, MAKEINTRESOURCE(DLG_MAIN), NULL, (DLGPROC)DlgMain);
 }
