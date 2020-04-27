@@ -23,7 +23,7 @@
 	<stdlib.h>
 	<tchar.h>
 
-1587820841 source:d:\documents\_project_\git\mywin32\main.cpp
+1587995638 source:d:\documents\_project_\git\mywin32\main.cpp
 	<windows.h>
 	<tchar.h>
 	<commctrl.h>
@@ -44,7 +44,7 @@
 	<stdlib.h>
 	<tchar.h>
 
-1587812743 source:d:\documents\_project_\git\mywin32\resource.rc
+1587863864 source:d:\documents\_project_\git\mywin32\resource.rc
 	<windows.h>
 	<commctrl.h>
 	<richedit.h>

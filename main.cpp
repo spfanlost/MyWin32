@@ -39,7 +39,10 @@ void FindFile(const std::string strPath)
     const std::string strFindPath = strPath + "\\*.*";
     HANDLE hFindFine = FindFirstFileA(strFindPath.c_str(), &findData);
     if (INVALID_HANDLE_VALUE == hFindFine)
-        LOG_DBG("Error:%ld", GetLastError());
+    {
+        LOG_DBG("FindFile Error:%ld", GetLastError());
+        goto GoOut;
+    }
     do
     {
         if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -56,6 +59,7 @@ void FindFile(const std::string strPath)
         }
     }
     while (FindNextFileA(hFindFine, &findData));
+GoOut:
     FindClose(hFindFine);
 }
 
@@ -85,8 +89,8 @@ void CreateListView(HWND hwndDlg, HWND hList)
     char tmp3[64];
     int i;
 
-    HMODULE hShell = LoadLibraryA("shell32.dll"); 
-    HICON hIcon = LoadIcon(hShell, MAKEINTRESOURCE(17)); 
+    HMODULE hShell = LoadLibraryA("shell32.dll");
+    HICON hIcon = LoadIcon(hShell, MAKEINTRESOURCE(17));
     HIMAGELIST hImageList = ImageList_Create(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), ILC_MASK, 1, 0);
     ImageList_AddIcon(hImageList, hIcon);
     ListView_SetImageList(hList, hImageList, LVSIL_SMALL); //lStyle = LV_VIEW_SAMLLICON or LV_VIEW_TILE ThiPara LVSIL_NORMAL
@@ -116,9 +120,18 @@ void CreateListView(HWND hwndDlg, HWND hList)
     LONG lStyle = GetWindowLong(hList, GWL_STYLE);
     lStyle &= ~LVS_TYPEMASK;
     lStyle |= LV_VIEW_DETAILS; //LV_VIEW_DETAILS LV_VIEW_ICON LV_VIEW_SMALLICON LV_VIEW_LIST LV_VIEW_TILE
-    ListView_SetExtendedListViewStyle(hList, LVS_EX_FULLROWSELECT); 
+    ListView_SetExtendedListViewStyle(hList, LVS_EX_FULLROWSELECT);
     SetWindowLong(hList, GWL_STYLE, lStyle);
 
+}
+
+void ReadTnifileStr(LPCTSTR Section, LPCTSTR Key, LPTSTR Buf, LPCTSTR IniName)
+{
+    assert(NULL != Section);
+    assert(NULL != Key);
+    assert(NULL != Buf);
+    assert(NULL != IniName);
+    GetPrivateProfileString(Section, Key, (LPCTSTR)"Read init didn't work!", Buf, sizeof(Buf), IniName);
 }
 
 BOOL CALLBACK DlgMain(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -128,22 +141,20 @@ BOOL CALLBACK DlgMain(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_INITDIALOG:
         if (hIcon)
             SendMessage(hwndDlg, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
-        WritePrivateProfileString((LPCTSTR)INI_SECTION1, (LPCTSTR)INI_KEY1_NAME, (LPCTSTR) "It all worked out okay.", (LPCTSTR)INI_NAME);
-        WritePrivateProfileString((LPCTSTR)INI_SECTION1, (LPCTSTR)INI_KEY2_NAME, (LPCTSTR) "55", (LPCTSTR)INI_NAME);
-        WritePrivateProfileString((LPCTSTR)INI_SECTION2, (LPCTSTR)INI_KEY1_NAME, (LPCTSTR) "is my test string", (LPCTSTR)INI_NAME);
-        WritePrivateProfileString((LPCTSTR)INI_SECTION2, (LPCTSTR)INI_KEY2_NAME, (LPCTSTR) "123", (LPCTSTR)INI_NAME);
+        WritePrivateProfileString(INI_SECTION1, INI_KEY1_NAME, (LPCTSTR)"It all worked out okay.", INI_NAME);
+        WritePrivateProfileString(INI_SECTION1, INI_KEY2_NAME, (LPCTSTR)"55", INI_NAME);
+        WritePrivateProfileString(INI_SECTION2, INI_KEY1_NAME, (LPCTSTR)"is my test string", INI_NAME);
+        WritePrivateProfileString(INI_SECTION2, INI_KEY2_NAME, (LPCTSTR)"123", INI_NAME);
         memset(inBuf, 0, sizeof(inBuf));
-        GetPrivateProfileString((LPCTSTR)INI_SECTION1, (LPCTSTR)INI_KEY1_NAME, (LPCTSTR) "Get didn't work", (LPTSTR)inBuf, 80, (LPCTSTR)INI_NAME);
+        GetPrivateProfileString(INI_SECTION1, INI_KEY1_NAME, (LPCTSTR)"Get didn't work", (LPTSTR)inBuf, 80, INI_NAME);
         LOG_DBG("%s", inBuf);
         memset(inBuf, 0, sizeof(inBuf));
-        GetPrivateProfileString((LPCTSTR)INI_SECTION2, (LPCTSTR)INI_KEY1_NAME, (LPCTSTR) "Get didn't work", (LPTSTR)inBuf, 80, (LPCTSTR)INI_NAME);
+        GetPrivateProfileString(INI_SECTION2, INI_KEY1_NAME, (LPCTSTR)"Get didn't work", (LPTSTR)inBuf, 80, INI_NAME);
         LOG_DBG("%s", inBuf);
-        LOG_DBG(INI_SECTION1 INI_KEY2_NAME ":%d", GetPrivateProfileInt((LPCTSTR)INI_SECTION1, (LPCTSTR)INI_KEY2_NAME,
-                INI_DEF_VAL, (LPCTSTR)INI_NAME));
-        LOG_DBG(INI_SECTION2 INI_KEY2_NAME ":%d", GetPrivateProfileInt((LPCTSTR)INI_SECTION2, (LPCTSTR)INI_KEY2_NAME,
-                INI_DEF_VAL, (LPCTSTR)INI_NAME));
+        LOG_DBG(INI_SECTION1 INI_KEY2_NAME ":%d", GetPrivateProfileInt(INI_SECTION1, INI_KEY2_NAME,INI_DEF_VAL, INI_NAME));
+        LOG_DBG(INI_SECTION2 INI_KEY2_NAME ":%d", GetPrivateProfileInt(INI_SECTION2, INI_KEY2_NAME,INI_DEF_VAL, INI_NAME));
 
-        SetDlgItemText(hwndDlg, IDC_STATIC1, (LPCTSTR) "INITDIALOG");
+        SetDlgItemText(hwndDlg, IDC_STATIC1, (LPCTSTR)"INITDIALOG");
 
         hWin = GetDlgItem(hwndDlg, IDC_SLIDER_CTRL1);
         SendMessage(hWin, TBM_SETRANGE, TRUE, (LPARAM)MAKELONG(0, 100));
@@ -211,6 +222,7 @@ BOOL CALLBACK DlgMain(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     return FALSE;
 }
+
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
     hInst = hInstance;
