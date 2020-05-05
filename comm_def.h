@@ -169,7 +169,7 @@ _STDC_
     } while (0)
 //--------------------------------------------------------------------------------
 // DEBUG ctrl
-#define DEBUG
+//#define DEBUG
 #define LOG_ERR(fmt, ...) LOG_PRINT_IF("[E]:%s:%d: " fmt "\n", \
                                            __FILE__, __LINE__, ##__VA_ARGS__)
 #ifdef DEBUG

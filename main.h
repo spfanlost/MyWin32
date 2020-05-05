@@ -4,7 +4,7 @@
  * @brief   main function header file
  * @version 0.0.1
  * @date    2020-04-25
- * 
+ *
  * @copyright Copyright (c) 2020 imyumeng@qq.com All rigthts reserved.
  */
 
@@ -24,12 +24,12 @@
 /* Exported types ------------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 #define INI_NAME ".\\test.ini"
-#define INI_SECTION1 "Section1"
-#define INI_SECTION2 "Section2"
-#define INI_KEY1_NAME "Key1"
-#define INI_KEY2_NAME "Key2"
 #define INI_DEF_STR "INI file access fail"
 #define INI_DEF_VAL (66)
+
+#define INI_SECTION1 "demo"
+#define INI_KEY1_STAYONTOP "StayOnTop"
+#define INI_KEY2_NAME "Key2"
 
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/

@@ -17,3 +17,10 @@
 #define IDC_CHK_StayOnTop                       40010
 #define IDC_ADDITEM                             40011
 #define IDC_DELITEM                             40012
+#define IDC_LISTBOX                             40013
+#define IDC_EDIT_AddStr                         40014
+#define IDC_EDIT_Times                          40015
+#define IDC_BUTN_ListBoxAdd                     40016
+#define IDC_BUTN_ListBoxRemove                  40017
+#define IDC_BUTN_ListBoxClear                   40018
+#define IDC_TEXT_ListBoxText                    40019
