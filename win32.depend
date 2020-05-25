@@ -23,15 +23,14 @@
 	<stdlib.h>
 	<tchar.h>
 
-1588680072 source:d:\documents\_project_\git\mywin32\main.cpp
-	<windows.h>
-	<tchar.h>
-	<commctrl.h>
-	"resource.h"
+1590418029 source:d:\documents\_project_\git\mywin32\main.cpp
 	"comm_def.h"
 	"main.h"
+	<windows.h>
+	<commctrl.h>
+	"resource.h"
 
-1588680933 d:\documents\_project_\git\mywin32\resource.h
+1590416994 d:\documents\_project_\git\mywin32\resource.h
 
 1586671436 d:\documents\_project_\git\mywin32\share.h
 	<stdio.h>
@@ -44,7 +43,7 @@
 	<stdlib.h>
 	<tchar.h>
 
-1588680933 source:d:\documents\_project_\git\mywin32\resource.rc
+1590416994 source:d:\documents\_project_\git\mywin32\resource.rc
 	<windows.h>
 	<commctrl.h>
 	<richedit.h>
